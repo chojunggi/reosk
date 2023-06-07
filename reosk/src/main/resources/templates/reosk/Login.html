@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <title>로그인</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <form class="mt-5" action="/reosk/login">
+                    <h2 class="text-center">로그인</h2>
+                    
+                    <div class="form-group" id="logs">
+                        <label for="ponNum">핸드폰 번호 입력:</label>
+                        <input type="tel" class="form-control" id="ponNum" name="ponNum" required placeholder="010-1234-5678">
+                    </div>
+
+                    <input onclick="loginService()" class="btn btn-primary btn-block" value="확인">
+                </form>
+                
+                <script type="text/javascript">
+                	function loginService(){
+                		var ponNum = $("#ponNum").val();
+                		alert(ponNum);
+                	    if (!ponNum) {
+                	        alert("핸드폰번호를 입력해주세요");
+                	        return; // 핸드폰번호가 없으면 함수를 종료합니다.
+                	    }
+                		fetch('/reosk/loginService', {
+                		    method: 'POST',
+                		    headers: {
+                		        'Content-Type': 'application/json'
+                		    },
+                		    body: JSON.stringify({ ponNum: ponNum })
+                		})
+
+                                .then(response => response.json())
+                                .then(data => {
+										alert("return ponNum: " + data.ponNum)
+										if(data.ponNum !== '1'){
+											 $('#logs').html("");
+											var html = `
+											<div>
+												${data.nickname} 님 환영합니다
+												<br>
+												포인트 잔액:
+												
+											</div>`;
+											$('#logs').html(html);
+											
+										}else{
+											alert("번호를 잘못 입력하셨습니다 다시 입력해주세요 ")
+											
+											
+										}
+                                    
+                                    // 기존 행 삭제
+                                  
+                                })
+                                .catch(error => {
+                                    console.error('Failed to fetch product list:', error);
+                                });
+                        }
+                </script>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <button onclick="window.location.href='/reosk/signup'" class="btn btn-secondary btn-block mt-2">회원가입</button>
+                <button onclick="history.back()" class="btn btn-secondary btn-block mt-2">뒤로가기</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

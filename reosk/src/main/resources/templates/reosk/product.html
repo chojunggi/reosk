@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Management</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .form-group {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .form-group label {
+            flex: 0 0 150px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .form-group input,
+        .form-group select {
+            flex: 1;
+            padding: 5px;
+        }
+
+        .submit-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>상품 등록 관리</h2>
+    
+    <h3>상품목록</h3>
+    <table id="productTable">
+        <thead>
+            <tr>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Product Image</th>
+                <th>Price</th>
+                <th>Menu</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 상품 정보를 동적으로 삽입할 부분 -->
+        </tbody>
+    </table>
+    
+    <h3>신규상품등록</h3>
+    <form id="newProductForm">
+        <div class="form-group">
+            <label for="pcode">상품코드:</label>
+            <input type="text" id="pcode" name="pcode" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="pname">상품명:</label>
+            <input type="text" id="pname" name="pname" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="pimgurl">상품 Image URL:</label>
+            <input type="text" id="pimgurl" name="pimgurl" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="price">가격:</label>
+            <input type="number" id="price" name="price" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="menu">Menu:</label>
+            <select id="menu" name="menu" required>
+                <!-- 옵션 값은 서버에서 동적으로 생성하여 삽입해야 합니다 -->
+            </select>
+        </div>
+        
+        <div class="form-group submit-btn">
+            <input type="submit" value="Register">
+        </div>
+    </form>
+    
+    <script>
+        // 상품 목록 가져오기
+        function fetchProductList() {
+            fetch('/reosk/products')
+                .then(response => response.json())
+                .then(data => {
+                    const productTable = document.getElementById('productTable');
+                    const tbody = productTable.querySelector('tbody');
+                    
+                    // 기존 행 삭제
+                    tbody.innerHTML = '';
+                    
+                    // 상품 정보를 테이블에 추가
+                    data.forEach(product => {
+                        const row = document.createElement('tr');
+                        
+                        const pcodeCell = document.createElement('td');
+                        pcodeCell.textContent = product.pcode;
+                        row.appendChild(pcodeCell);
+                        
+                        const pnameCell = document.createElement('td');
+                        pnameCell.textContent = product.pname;
+                        row.appendChild(pnameCell);
+                        
+                        const pimgurlCell = document.createElement('td');
+                        pimgurlCell.textContent = product.pimgurl;
+                        row.appendChild(pimgurlCell);
+                        
+                        const priceCell = document.createElement('td');
+                        priceCell.textContent = product.price;
+                        row.appendChild(priceCell);
+                        
+                        const menuCell = document.createElement('td');
+                        menuCell.textContent = product.menu.mcode;
+                        row.appendChild(menuCell);
+                        
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Failed to fetch product list:', error);
+                });
+        }
+        
+        // 서버에서 메뉴 목록을 가져와서 삽입하는 함수
+        function populateMenuOptions() {
+            fetch('/reosk/menuList')
+                .then(response => response.json())
+                .then(data => {
+                    const menuSelect = document.getElementById('menu');
+                    
+                    // 서버에서 받은 메뉴 데이터를 옵션으로 추가
+                    data.forEach(menu => {
+                        const option = document.createElement('option');
+                        option.value = menu.mcode;
+                        option.textContent = menu.mname;
+                        menuSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Failed to fetch menu data:', error);
+                });
+        }
+        
+        // 폼 제출 이벤트 핸들러
+        document.getElementById('newProductForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 시 페이지 리로딩 방지
+            
+//            const formData = new FormData(this);
+            const formData = {
+                    pcode: document.getElementById('pcode').value,
+                    pname: document.getElementById('pname').value,
+                    pimgurl: document.getElementById('pimgurl').value,
+                    price: parseInt(document.getElementById('price').value),
+                    mcode: document.getElementById('menu').value
+//            		menu: {
+//                        mcode: document.getElementById('menu').value
+//                    }
+                };
+            // 신규 등록 요청을 서버로 전송
+            fetch('/reosk/prodcr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Product registered successfully!');
+                    this.reset(); // 폼 초기화
+                    fetchProductList(); // 상품 목록 갱신
+                } else {
+                    alert('Failed to register product.');
+                }
+            })
+            .catch(error => {
+                console.error('Failed to register product:', error);
+            });
+        });
+        
+        // 초기 로딩 시 상품 목록과 메뉴 목록 가져오기
+        fetchProductList();
+        populateMenuOptions();
+    </script>
+</body>
+</html>

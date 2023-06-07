@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+	<meta charset="utf-8" />
+    <title>메뉴 등록</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+	<!-- Bootstrap icons-->
+  	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+  	<!-- Core theme CSS (includes Bootstrap)-->
+  	<link href="/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <h2>메뉴 등록</h2>
+    <form action="/menu" method="post">
+        <label for="mcode">메뉴 코드:</label>
+        <input type="text" id="mcode" name="mcode" required><br><br>
+
+        <label for="mname">메뉴 이름:</label>
+        <input type="text" id="mname" name="mname" required><br><br>
+
+        <label for="mimgurl">이미지 URL:</label>
+        <input type="text" id="mimgurl" name="mimgurl" required><br><br>
+
+        <input type="submit" value="메뉴 등록">
+    </form>
+
+
+
+
+<!-- ====================================================================================== -->
+
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+  <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+</footer>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="/js/scripts.js"></script>
+</body>
+</html>

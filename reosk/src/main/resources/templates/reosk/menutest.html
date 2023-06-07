@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>메뉴 관리</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .form-container {
+            margin-top: 20px;
+        }
+
+        .form-container input[type=text] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        .form-container input[type=submit] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h2>메뉴 관리</h2>
+
+    <!-- 메뉴 테이블 -->
+    <table id="menuTable">
+        <tr>
+            <th>메뉴 코드</th>
+            <th>메뉴 이름</th>
+            <th>이미지 URL</th>
+        </tr>
+    </table>
+
+    <!-- 신규 생성 폼 -->
+    <div class="form-container">
+        <h3>신규 메뉴 생성</h3>
+        <form id="newMenuForm">
+            <label for="newMcode">메뉴 코드:</label>
+            <input type="text" id="newMcode" name="newMcode" required><br>
+
+            <label for="newMname">메뉴 이름:</label>
+            <input type="text" id="newMname" name="newMname" required><br>
+
+            <label for="newMimgurl">이미지 URL:</label>
+            <input type="text" id="newMimgurl" name="newMimgurl" required><br>
+
+            <input type="submit" value="메뉴 등록">
+        </form>
+    </div>
+
+    <script>
+       
+        // 초기화 함수
+        function initialize() {
+            displayMenuData(); // 등록된 메뉴 표시
+            setupNewMenuForm(); // 신규 메뉴 폼 설정
+        }
+
+        function displayMenuData() {
+            var menuTable = document.getElementById("menuTable");
+
+            // 기존 테이블 내용 삭제
+            menuTable.innerHTML = "";
+            
+			alert("갱신확인");
+            // 서버로부터 메뉴 데이터 가져오기
+            fetch('/reosk/menuList')
+                .then(response => response.json())
+                .then(data => {
+                	// 테이블 헤더 추가
+                    var headerRow = menuTable.insertRow(0);
+                    var th1 = document.createElement("th");
+                    th1.textContent = "메뉴 코드";
+                    var th2 = document.createElement("th");
+                    th2.textContent = "메뉴 이름";
+                    var th3 = document.createElement("th");
+                    th3.textContent = "이미지 URL";
+                    headerRow.appendChild(th1);
+                    headerRow.appendChild(th2);
+                    headerRow.appendChild(th3);
+
+                    
+                    // 메뉴 데이터 행 추가
+                    data.forEach(menu => {
+                        var row = menuTable.insertRow();
+                        var cell1 = row.insertCell();
+                        cell1.textContent = menu.mcode;
+                        var cell2 = row.insertCell();
+                        cell2.textContent = menu.mname;
+                        var cell3 = row.insertCell();
+                        cell3.textContent = menu.mimgurl;
+                    });
+                })
+                .catch(error => {
+                    console.error('메뉴 데이터를 가져오는 중 오류가 발생했습니다:', error);
+                });
+        }
+
+
+        // 신규 메뉴 폼 설정 함수
+        function setupNewMenuForm() {
+            var newMenuForm = document.getElementById("newMenuForm");
+            var menuData = [];
+            newMenuForm.addEventListener("submit", function (event) {
+                event.preventDefault(); // 폼 제출 시 페이지 리로딩 방지
+
+                // 새로운 메뉴 데이터 생성
+                var newMenu = {
+                    mcode: document.getElementById("newMcode").value,
+                    mname: document.getElementById("newMname").value,
+                    mimgurl: document.getElementById("newMimgurl").value
+                };
+
+                // 생성한 메뉴 데이터를 배열에 추가
+                menuData.push(newMenu);
+                
+                // 생성한 메뉴 데이터를 배열에 추가 후 서버전송
+                sendMenuData(menuData);
+
+                // 등록된 메뉴 표시 갱신
+                displayMenuData();
+
+                // 폼 입력값 초기화
+                newMenuForm.reset();
+            });
+        }
+        
+        //신규 등록 데이터 서버전송
+        function sendMenuData(menuData) {
+        	  fetch('/reosk/menucr', {
+        	    method: 'POST',
+        	    headers: {
+        	      'Content-Type': 'application/json',
+        	    },
+        	    body: JSON.stringify(menuData),
+        	  })
+        	  .then(response => {
+        	    if (response.ok) {
+        	      console.log('메뉴 데이터가 성공적으로 전송되었습니다.');
+        	      // 전송 성공 후 필요한 작업 수행
+        	    } else {
+        	      console.error('메뉴 데이터 전송 실패:', response.status);
+        	      // 전송 실패 처리
+        	    }
+        	  })
+        	  .catch(error => {
+        	    console.error('메뉴 데이터 전송 중 오류 발생:', error);
+        	    // 오류 처리
+        	  });
+        	}
+
+
+        // 페이지 로드 시 초기화 함수 호출
+        initialize();
+    </script>
+</body>
+</html>
+

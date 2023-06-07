@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>회원가입</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center"  method="post">
+            <div class="col-6">
+                <form class="mt-5" action="/reosk/signupOK" modelAttribute="user" method="post">
+                    <h2 class="text-center">회원가입</h2>
+                    
+                    <div class="form-group">
+                        <label for="ponNum">핸드폰번호:</label>
+                        <input type="text" class="form-control" id="ponNum" name="ponNum" required placeholder="010-1234-5678">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">이름:</label>
+                        <input type="text" class="form-control" id="username" name="username"  placeholder="이름을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="nickname" >닉네임:</label>
+                        <input type="text" class="form-control" id="nickname" name="nickname" placeholder="">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">나이:</label>
+                        <input type="text" class="form-control" id="age" name="age" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sex">성별:</label>
+                        <input type="text" class="form-control" id="sex" name="sex" required>
+                    </div>
+
+                    <input type="submit" class="btn btn-primary btn-block" value="Submit">
+                </form>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <button onclick="history.back()" class="btn btn-secondary btn-block mt-2">Go Back</button>
+                <button onclick="window.location.href='login.html'" class="btn btn-secondary btn-block mt-2">Log In</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
